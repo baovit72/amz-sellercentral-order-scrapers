@@ -1,20 +1,20 @@
-console.log("Runner 2")
+
 location.href.includes("find.html") && window.addEventListener("load", async function () {
   /*MAIN*/
   const processItem = async (url)=>{     
     const address = JSON.parse("{"+/\"address\".+?}/.exec((await getHouseDetailRaw(url)).replaceAll(" ","").replaceAll("\n",""))+"}").address; 
     const post_code = address.outcode + "-" + address.incode;
-    const dataHistory = await getHistoryOfHouse(address);
+    const dataHistory = await getHistoryOfHouse_2(address);
     const houseTransaction = dataHistory.soldPropertyTransactionHistories
       .map((transaction) => transaction.soldPrice + "_" + transaction.year)
       .join("-");
-    const rawLocationHtml = await getLocationIDRaw(post_code);
+    const rawLocationHtml = await getLocationIDRaw_2(post_code);
     const locId = /POSTCODE\^(\d+)/.exec(rawLocationHtml)[1];
-    const firstPageData = await getHistoryOfLocation(locId);
+    const firstPageData = await getHistoryOfLocation_2(locId);
     const pageNum = firstPageData.pagination.last;
     const rawTransactions = firstPageData.results.properties;
     for (var i = 2; i <= pageNum; i++) {
-      rawTransactions.push((await getHistoryOfLocation(i)).results.properties);
+      rawTransactions.push((await getHistoryOfLocation_2(i)).results.properties);
     }
     const transactions = rawTransactions.map((item) => ({
       address: item.address,
@@ -37,7 +37,7 @@ location.href.includes("find.html") && window.addEventListener("load", async fun
   }
   console.log("begin")
   while (!document.getElementsByClassName("propertyCard-details").length) {
-    await sleep(2000);
+    await sleep_2(2000);
   }
   const cards =  document.getElementsByClassName("propertyCard-details");
   for(var i=0; i<cards.length; i++) {
@@ -63,7 +63,7 @@ location.href.includes("find.html") && window.addEventListener("load", async fun
   
 
 });
-const getLocationIDRaw = (postcode) => {
+const getLocationIDRaw_2 = (postcode) => {
   console.log("fetching");
   return new Promise((resolve, reject) => {
     fetch(`https://www.rightmove.co.uk/house-prices/${postcode}`)
@@ -79,7 +79,7 @@ const getHouseDetailRaw = (url) => {
       .then((data) => resolve(data));
   });
 };
-const getHistoryOfHouse = ({ deliveryPointId }) => {
+const getHistoryOfHouse_2 = ({ deliveryPointId }) => {
   console.log("fetching");
   return new Promise((resolve, reject) => {
     fetch(
@@ -89,7 +89,7 @@ const getHistoryOfHouse = ({ deliveryPointId }) => {
       .then((data) => resolve(data));
   });
 };
-const getHistoryOfLocation = (locId) => {
+const getHistoryOfLocation_2 = (locId) => {
   console.log("fetching");
   return new Promise((resolve, reject) => {
     fetch(
@@ -99,7 +99,7 @@ const getHistoryOfLocation = (locId) => {
       .then((data) => resolve(data));
   });
 };
-const sleep = (ms) => {
+const sleep_2 = (ms) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => resolve(), ms);
   });

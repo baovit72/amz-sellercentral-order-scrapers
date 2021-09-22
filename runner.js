@@ -1,5 +1,5 @@
 console.log("runner 1")
-location.href.includes("properties") && window.addEventListener("load", async function () {
+location.href.includes(".uk/properties/") && window.addEventListener("load", async function () {
   while (!window.PAGE_MODEL) {
     await sleep(2000);
   }
