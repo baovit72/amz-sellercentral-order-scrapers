@@ -1,3 +1,4 @@
+console.log("Runner 2")
 location.href.includes("find.html") && window.addEventListener("load", async function () {
   /*MAIN*/
   const processItem = async (url)=>{     

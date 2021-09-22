@@ -24,7 +24,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.rightmove.co.uk/properties/*"],
+      "matches": ["https://www.rightmove.co.uk/*"],
       "js": ["inject.js","inject_2.js"]
     }
     
