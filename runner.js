@@ -1,25 +1,25 @@
-window.addEventListener("load", async function () {
+location.href.includes("properties") && window.addEventListener("load", async function () {
   while (!window.PAGE_MODEL) {
     await sleep(2000);
   }
   const addressElement = document.querySelector('h1[itemProp="streetAddress"]');
   /*UPDATE LOADING*/
   const originalAddress = addressElement.innerText;
-  addressElement.innerText = "LOADING... " + originalAddress;
+  addressElement.innerText = "... " + originalAddress;
   /*MAIN*/
   const address = window.PAGE_MODEL.propertyData.address;
   !address.deliveryPointId &&
-    (addressElement.innerText = "NO SOLD HISTORY... " + originalAddress);
+    (addressElement.innerText = "ⓧ " + originalAddress);
   const post_code = address.outcode + "-" + address.incode;
   const dataHistory = await getHistoryOfHouse(address);
   !dataHistory.soldPropertyTransactionHistories &&
     dataHistory.soldPropertyTransactionHistories.length === 0 &&
-    (addressElement.innerText = "NO SOLD HISTORY... " + originalAddress);
+    (addressElement.innerText = "ⓧ " + originalAddress);
   const houseTransaction = dataHistory.soldPropertyTransactionHistories
     .map((transaction) => transaction.soldPrice + "_" + transaction.year)
     .join("-");
   houseTransaction.trim().length === 0 &&
-    (addressElement.innerText = "NO SOLD HISTORY... " + originalAddress);
+    (addressElement.innerText = "ⓧ " + originalAddress);
 
   console.log(houseTransaction);
   const rawLocationHtml = await getLocationIDRaw(post_code);

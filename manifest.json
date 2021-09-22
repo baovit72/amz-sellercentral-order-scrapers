@@ -8,8 +8,8 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["runner.js"],
-      "matches": ["https://*.rightmove.co.uk/*"]
+      "resources": ["runner.js","runner_2.js"],
+      "matches": ["https://www.rightmove.co.uk/*"]
     }
   ],
   "permissions": ["storage", "activeTab", "scripting"],
@@ -24,9 +24,10 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*.rightmove.co.uk/*"],
-      "js": ["inject.js"]
+      "matches": ["https://www.rightmove.co.uk/properties/*"],
+      "js": ["inject.js","inject_2.js"]
     }
+    
   ],
   "icons": {
     "16": "/images/get_started16.png",
