@@ -1,6 +1,7 @@
 
 location.href.includes("find.html") && window.addEventListener("load", async function () {
   /*MAIN*/
+ 
   const processItem = async (url)=>{     
     const address = JSON.parse("{"+/\"address\".+?}/.exec((await getHouseDetailRaw(url)).replaceAll(" ","").replaceAll("\n",""))+"}").address; 
     const post_code = address.outcode + "-" + address.incode;
@@ -35,32 +36,43 @@ location.href.includes("find.html") && window.addEventListener("load", async fun
     );
     return matchTransaction.address;
   }
-  console.log("begin")
-  while (!document.getElementsByClassName("propertyCard-details").length) {
-    await sleep_2(2000);
-  }
-  const cards =  document.getElementsByClassName("propertyCard-details");
-  for(var i=0; i<cards.length; i++) {
-    try{
-      const card = cards[i];
-      const initAddress = card.querySelector("address[class='propertyCard-address']").innerText ;
-      try{ 
-        card.querySelector("address[class='propertyCard-address']").innerText  = "... " + initAddress ;
-        const url = card.querySelector("a[class='propertyCard-link']").href; 
-        const address = await processItem(url);
-        address ? (card.querySelector("address[class='propertyCard-address']").innerText = address) : (card.querySelector("address[class='propertyCard-address']").innerText = "ⓧ " + initAddress); 
-      }
-      catch (e){
-        console.log(e);
-        card.querySelector("address[class='propertyCard-address']").innerText  = "ⓧ " + initAddress ;
-      }
-    }
-    catch{
-
-    }
-   
-  }
   
+  const runner = async()=>{
+    console.log("begin")
+    while (!document.getElementsByClassName("propertyCard-details").length) {
+      await sleep_2(2000);
+    }
+    const cards =  document.getElementsByClassName("propertyCard-details");
+    for(var i=0; i<cards.length; i++) {
+      try{
+        const card = cards[i];
+        const initAddress = card.querySelector("address[class='propertyCard-address']").innerText ;
+        try{ 
+          card.querySelector("address[class='propertyCard-address']").innerText  = "... " + initAddress ;
+          const url = card.querySelector("a[class='propertyCard-link']").href; 
+          const address = await processItem(url);
+          address ? (card.querySelector("address[class='propertyCard-address']").innerText = address) : (card.querySelector("address[class='propertyCard-address']").innerText = "ⓧ " + initAddress); 
+        }
+        catch (e){
+          console.log(e);
+          card.querySelector("address[class='propertyCard-address']").innerText  = "ⓧ " + initAddress ;
+        }
+      }
+      catch{
+  
+      }
+    }
+  } 
+  const currentLocation = window.location.href;
+  setInterval(() =>{
+    console.log(currentLocation,window.location.href)
+    if(currentLocation !== window.location.href){
+      window.location.reload();
+    }
+  },1000)
+  
+  await runner();
+ 
 
 });
 const getLocationIDRaw_2 = (postcode) => {
