@@ -1,6 +1,6 @@
 {
-  "name": "ADDRESS HELPER",
-  "description": "ADDRESS HELPER",
+  "name": "AMAZON ORDER SCRAPER",
+  "description": "AMAZON ORDER SCRAPER",
   "version": "1.0",
   "manifest_version": 3,
   "background": {
@@ -8,8 +8,8 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["runner.js","runner_2.js"],
-      "matches": ["https://www.rightmove.co.uk/*","https://rightmove.co.uk/*"]
+      "resources": ["runner.js"],
+      "matches": ["https://sellercentral.amazon.in/*","https://sellercentral.amazon.com/*","https://sellercentral.amazon.co.uk/*"]
     }
   ],
   "permissions": ["storage", "activeTab", "scripting"],
@@ -24,10 +24,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.rightmove.co.uk/*","https://rightmove.co.uk/*"],
-      "js": ["inject.js","inject_2.js"]
+      "matches":["https://sellercentral.amazon.in/*","https://sellercentral.amazon.com/*","https://sellercentral.amazon.co.uk/*"],
+      "js": ["inject.js"]
     }
-    
   ],
   "icons": {
     "16": "/images/get_started16.png",
