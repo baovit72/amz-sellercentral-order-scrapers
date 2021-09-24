@@ -72,6 +72,12 @@ const localStorageHandler = async () => {
 };
 //SE@656%&#
 const running = async () => {
+  /*accountName, marketName, amazonOrderId, orderDate, earliestDeliveryDate, 
+  salesChannel, orderItems.sellerSku,orderItems.productName, orderItems.quantityOrdered, 
+  orderItems.unitPrice.CurrencyCode, orderItems.unitPrice.Amount, address.name, address.line1, address.line2, 
+  address.city, address.stateOrRegion, address.postalCode, address.countryCode, address.phoneNumber, 
+  orderItems.imageUrl, orderItems.productLink
+  */
   const data = await getLocalData();
   console.log("currentData", data);
   const merchant = data.merchants[data.currentIndex];
@@ -79,12 +85,14 @@ const running = async () => {
     data.status = "init";
   } else {
     const orders = await getAllOrders(merchant);
+    const orders_1 = orders.map((order) => ({
+      ...order,
+      accountName: merchant.name,
+      marketName: merchant.marketplaceName,
+    }));
+    const orders_2 = [].concat.apply([],orders_1.map(order=>order.orderItems.map(item=>({...order,...item}))));
     data.orders.push(
-      ...orders.map((order) => ({
-        ...order,
-        accountName: merchant.name,
-        marketName: merchant.marketplaceName,
-      }))
+      ...orders_2
     );
     data.currentIndex++;
     await setLocalData(data);
@@ -212,7 +220,16 @@ const m_getOrderDetail = async (orders) => {
   const result = [];
   for (let i = 0; i < orders.length; i++) {
     const order = orders[i];
-    result.push({...order, address: (await getAddressDetail((await getOrderDetail(order.amazonOrderId)).order.blob))[order.amazonOrderId]});
+    result.push({
+      ...order,
+      address: (
+        await getAddressDetail(
+          (
+            await getOrderDetail(order.amazonOrderId)
+          ).order.blob
+        )
+      )[order.amazonOrderId].address,
+    });
   }
   return result;
 };
