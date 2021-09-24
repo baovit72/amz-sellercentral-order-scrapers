@@ -1,24 +1,32 @@
 // Initialize butotn with users's prefered color
-let changeColor = document.getElementById("changeColor");
+const setLocalData = (data) => {
+  return new Promise((resolve, reject) => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
-chrome.storage.sync.get("color", ({ color }) => {
-  changeColor.style.backgroundColor = color;
-});
-
-// When the button is clicked, inject setPageBackgroundColor into current page
-changeColor.addEventListener("click", async () => {
-  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: setPageBackgroundColor,
+    var requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: JSON.stringify(data),
+      redirect: "follow",
+    };
+    fetch(
+      "https://jsonblob.com/api/jsonBlob/890836991147786240",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => resolve(result))
+      .catch((error) => console.log("error", error));
   });
-});
+};
 
-// The body of this function will be execuetd as a content script inside the
-// current page
-function setPageBackgroundColor() {
-  chrome.storage.sync.get("color", ({ color }) => {
-    document.body.style.backgroundColor = color;
+document.getElementById("stop").onclick = async () => {
+ 
+  chrome.tabs.query({}, function (tabs) {
+    console.log(tabs)
+    tabs.forEach(
+      (tab) => tab.url &&  tab.url.includes("amazon") && chrome.tabs.remove(tab.id)
+    );
   });
-}
+  await setLocalData({});
+};

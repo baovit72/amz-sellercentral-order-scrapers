@@ -14,7 +14,6 @@ console.log("runner");
 const onClickScrape = async () => {
   console.log("clicked scraping");
   let data = await getLocalData();
-
   data = { currentIndex: 0, status: "init", merchants: [], orders: [] };
   await setLocalData(data);
   await init();
@@ -70,6 +69,71 @@ const localStorageHandler = async () => {
       break;
   }
 };
+const wrap = (content) => '"' + content + '"';
+const objectToCsvLine = (object) => {
+  console.log("export to csv line");
+  console.log(object);
+  return [
+    object.accountName,
+    object.marketName,
+    object.amazonOrderId,
+    wrap(new Date(object.orderDate * 1000).toISOString()),
+    wrap(new Date(object.earliestDeliveryDate * 1000).toISOString()),
+    object.salesChannel,
+    wrap(object.sellerSku),
+    wrap(object.productName),
+    object.quantityOrdered,
+    object.unitPrice.CurrencyCode,
+    object.unitPrice.Amount,
+    wrap(object.address.name),
+    wrap(object.address.line1),
+    wrap(object.address.line2),
+    wrap(object.address.city),
+    wrap(object.address.stateOrRegion),
+    wrap(object.address.postalCode),
+    wrap(object.address.countryCode),
+    object.address.phoneNumber,
+    wrap(object.imageUrl),
+    wrap(object.productLink),
+  ].join(",");
+};
+const titles = [
+  "Account",
+  "Market Place",
+  "Order No",
+  "Purchase Date",
+  "Delivery Date",
+  "Sales Channel",
+  "SKU",
+  "Title",
+  "Quantity",
+  "Currency",
+  "Price",
+  "Full name",
+  "Address Line1",
+  "Address Line2",
+  "City",
+  "State",
+  "Pincode",
+  "Country",
+  "Phone",
+  "Image URL",
+  "Product Lisiting URL",
+];
+const exportToCsv = (orders) => {
+  console.log("export to csv");
+  const csvContent = [
+    titles,
+    ...orders.map((order) => objectToCsvLine(order)),
+  ].join("\n");
+  console.log(csvContent);
+  var encodedUri = URL.createObjectURL(new Blob(["\ufeff", csvContent]));
+  var link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "unshipped.csv");
+  document.body.appendChild(link);
+  link.click();
+};
 //SE@656%&#
 const running = async () => {
   /*accountName, marketName, amazonOrderId, orderDate, earliestDeliveryDate, 
@@ -90,13 +154,19 @@ const running = async () => {
       accountName: merchant.name,
       marketName: merchant.marketplaceName,
     }));
-    const orders_2 = [].concat.apply([],orders_1.map(order=>order.orderItems.map(item=>({...order,...item}))));
-    data.orders.push(
-      ...orders_2
+    const orders_2 = [].concat.apply(
+      [],
+      orders_1.map((order) =>
+        order.orderItems.map((item) => ({ ...order, ...item }))
+      )
     );
+    data.orders.push(...orders_2);
     data.currentIndex++;
     await setLocalData(data);
     if (data.merchants.length === data.currentIndex + 1) {
+      exportToCsv(data.orders);
+      await setLocalData({});
+      alert("DONE");
     } else switchToMerchant(data.merchants[data.currentIndex]);
   }
 };

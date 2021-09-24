@@ -12,7 +12,7 @@
       "matches": ["https://sellercentral.amazon.in/*","https://sellercentral.amazon.com/*","https://sellercentral.amazon.co.uk/*"]
     }
   ],
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting","tabs"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
