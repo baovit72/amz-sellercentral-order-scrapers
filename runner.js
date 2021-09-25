@@ -349,7 +349,7 @@ const getOrders = (offset) => {
 };
 const getAddressDetail = (blob) => {
   return new Promise((resolve, reject) => {
-    fetch("https://sellercentral.amazon.in/orders-st/resolve", {
+    fetch(getDomain()+"orders-st/resolve", {
       headers: {
         accept: "application/json",
         "accept-language": "en-US,en;q=0.9,vi;q=0.8",
