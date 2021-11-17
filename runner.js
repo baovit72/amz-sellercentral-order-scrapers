@@ -191,6 +191,12 @@ const switchToMerchant = (merchant) => {
 const init = async () => {
   const data = await getLocalData();
   const merchants = (await getMerchants()).partnerAccounts;
+  for (let i = 0; i < merchants.length; i++) {
+    merchants[i].merchantMarketplaces = await getMerchantMarketPlaces(
+      merchants[i].id
+    );
+  }
+  console.log("after fix", merchants)
   const parsedMerchants = [].concat
     .apply(
       [],
@@ -255,9 +261,37 @@ const getSwitchRegionUrl = (
 
 const getMerchants = () => {
   return new Promise((resolve, reject) => {
+    fetch(getDomain() + "global-picker/data/get-partner-accounts", {
+      headers: {
+        accept: "*/*",
+        "accept-language": "en-US,en;q=0.9,vi;q=0.8",
+        "cache-control": "no-cache",
+        "content-type": "application/json",
+        pragma: "no-cache",
+        "sec-ch-ua":
+          '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "x-requested-with": "XMLHttpRequest",
+      },
+      referrerPolicy: "strict-origin-when-cross-origin",
+      body: '{"delegationContext":"","pageSize":10}',
+      method: "POST",
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((data) => data.json())
+      .then((data) => resolve(data));
+  });
+};
+const getMerchantMarketPlaces = (merchantId) => {
+  return new Promise((resolve, reject) => {
     fetch(
       getDomain() +
-        "global-picker/data/get-merchant-marketplaces-with-no-partner-account-access?stck=eu",
+        "global-picker/data/get-merchant-marketplaces-for-partner-account",
       {
         headers: {
           accept: "*/*",
@@ -275,14 +309,14 @@ const getMerchants = () => {
           "x-requested-with": "XMLHttpRequest",
         },
         referrerPolicy: "strict-origin-when-cross-origin",
-        body: '{"limitResults":true}',
+        body: `{"delegationContext":"","partnerAccountId":"${merchantId}"}`,
         method: "POST",
         mode: "cors",
         credentials: "include",
       }
     )
       .then((data) => data.json())
-      .then((data) => resolve(data));
+      .then((data) => resolve(data.merchantMarketplaces));
   });
 };
 //Mass order getters
@@ -349,7 +383,7 @@ const getOrders = (offset) => {
 };
 const getAddressDetail = (blob) => {
   return new Promise((resolve, reject) => {
-    fetch(getDomain()+"orders-st/resolve", {
+    fetch(getDomain() + "orders-st/resolve", {
       headers: {
         accept: "application/json",
         "accept-language": "en-US,en;q=0.9,vi;q=0.8",
