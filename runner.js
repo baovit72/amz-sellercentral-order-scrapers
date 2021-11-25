@@ -148,19 +148,23 @@ const running = async () => {
   if (!merchant) {
     data.status = "init";
   } else {
-    const orders = await getAllOrders(merchant);
-    const orders_1 = orders.map((order) => ({
-      ...order,
-      accountName: merchant.name,
-      marketName: merchant.marketplaceName,
-    }));
-    const orders_2 = [].concat.apply(
-      [],
-      orders_1.map((order) =>
-        order.orderItems.map((item) => ({ ...order, ...item }))
-      )
-    );
-    data.orders.push(...orders_2);
+    try {
+      const orders = await getAllOrders(merchant);
+      const orders_1 = orders.map((order) => ({
+        ...order,
+        accountName: merchant.name,
+        marketName: merchant.marketplaceName,
+      }));
+      const orders_2 = [].concat.apply(
+        [],
+        orders_1.map((order) =>
+          order.orderItems.map((item) => ({ ...order, ...item }))
+        )
+      );
+      data.orders.push(...orders_2);
+    } catch (e) {
+      console.log(e);
+    }
     data.currentIndex++;
     await setLocalData(data);
     if (data.merchants.length === data.currentIndex + 1) {
@@ -196,7 +200,7 @@ const init = async () => {
       merchants[i].id
     );
   }
-  console.log("after fix", merchants)
+  console.log("after fix", merchants);
   const parsedMerchants = [].concat
     .apply(
       [],
