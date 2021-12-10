@@ -4,17 +4,17 @@
  * data
  */
 
-const jsonAPI = "http://jsonblob.com/api/jsonBlob/890821801681371136";
-console.log("runner");
+const jsonAPI = 'http://jsonblob.com/api/jsonBlob/890821801681371136';
+console.log('runner');
 (async () => {
-  while (!document.getElementById("actionButton")) {
+  while (!document.getElementById('actionButton')) {
     await sleep(1000);
   }
 })();
 const onClickScrape = async () => {
-  console.log("clicked scraping");
+  console.log('clicked scraping');
   let data = await getLocalData();
-  data = { currentIndex: 0, status: "init", merchants: [], orders: [] };
+  data = { currentIndex: 0, status: 'init', merchants: [], orders: [] };
   await setLocalData(data);
   await init();
 };
@@ -22,41 +22,41 @@ const onClickScrape = async () => {
 const getLocalData = () => {
   return new Promise((resolve, reject) => {
     var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append('Content-Type', 'application/json');
 
     var requestOptions = {
-      method: "GET",
+      method: 'GET',
       headers: myHeaders,
-      redirect: "follow",
+      redirect: 'follow',
     };
 
     fetch(
-      "https://jsonblob.com/api/jsonBlob/890836991147786240",
+      'https://jsonblob.com/api/jsonBlob/890836991147786240',
       requestOptions
     )
       .then((response) => response.json())
       .then((result) => resolve(result))
-      .catch((error) => console.log("error", error));
+      .catch((error) => console.log('error', error));
   });
 };
 const setLocalData = (data) => {
   return new Promise((resolve, reject) => {
     var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append('Content-Type', 'application/json');
 
     var requestOptions = {
-      method: "PUT",
+      method: 'PUT',
       headers: myHeaders,
       body: JSON.stringify(data),
-      redirect: "follow",
+      redirect: 'follow',
     };
     fetch(
-      "https://jsonblob.com/api/jsonBlob/890836991147786240",
+      'https://jsonblob.com/api/jsonBlob/890836991147786240',
       requestOptions
     )
       .then((response) => response.json())
       .then((result) => resolve(result))
-      .catch((error) => console.log("error", error));
+      .catch((error) => console.log('error', error));
   });
 };
 
@@ -64,14 +64,14 @@ const localStorageHandler = async () => {
   const data = await getLocalData();
   console.log(data);
   switch (data.status) {
-    case "running":
+    case 'running':
       running();
       break;
   }
 };
 const wrap = (content) => '"' + content + '"';
 const objectToCsvLine = (object) => {
-  console.log("export to csv line");
+  console.log('export to csv line');
   console.log(object);
   return [
     object.accountName,
@@ -95,42 +95,42 @@ const objectToCsvLine = (object) => {
     object.address.phoneNumber,
     wrap(object.imageUrl),
     wrap(object.productLink),
-  ].join(",");
+  ].join(',');
 };
 const titles = [
-  "Account",
-  "Market Place",
-  "Order No",
-  "Purchase Date",
-  "Delivery Date",
-  "Sales Channel",
-  "SKU",
-  "Title",
-  "Quantity",
-  "Currency",
-  "Price",
-  "Full name",
-  "Address Line1",
-  "Address Line2",
-  "City",
-  "State",
-  "Pincode",
-  "Country",
-  "Phone",
-  "Image URL",
-  "Product Lisiting URL",
+  'Account',
+  'Market Place',
+  'Order No',
+  'Purchase Date',
+  'Delivery Date',
+  'Sales Channel',
+  'SKU',
+  'Title',
+  'Quantity',
+  'Currency',
+  'Price',
+  'Full name',
+  'Address Line1',
+  'Address Line2',
+  'City',
+  'State',
+  'Pincode',
+  'Country',
+  'Phone',
+  'Image URL',
+  'Product Lisiting URL',
 ];
 const exportToCsv = (orders) => {
-  console.log("export to csv");
+  console.log('export to csv');
   const csvContent = [
     titles,
     ...orders.map((order) => objectToCsvLine(order)),
-  ].join("\n");
+  ].join('\n');
   console.log(csvContent);
-  var encodedUri = URL.createObjectURL(new Blob(["\ufeff", csvContent]));
-  var link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "unshipped.csv");
+  var encodedUri = URL.createObjectURL(new Blob(['\ufeff', csvContent]));
+  var link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', 'unshipped.csv');
   document.body.appendChild(link);
   link.click();
 };
@@ -143,10 +143,10 @@ const running = async () => {
   orderItems.imageUrl, orderItems.productLink
   */
   const data = await getLocalData();
-  console.log("currentData", data);
+  console.log('currentData', data);
   const merchant = data.merchants[data.currentIndex];
   if (!merchant) {
-    data.status = "init";
+    data.status = 'init';
   } else {
     try {
       const orders = await getAllOrders(merchant);
@@ -170,13 +170,13 @@ const running = async () => {
     if (data.merchants.length === data.currentIndex + 1) {
       exportToCsv(data.orders);
       await setLocalData({});
-      alert("DONE");
+      alert('DONE');
     } else switchToMerchant(data.merchants[data.currentIndex]);
   }
 };
 const switchToMerchant = (merchant) => {
   console.log(
-    "switching to ...",
+    'switching to ...',
     getSwitchRegionUrl(
       merchant.marketplaceName,
       merchant.directedId,
@@ -200,7 +200,7 @@ const init = async () => {
       merchants[i].id
     );
   }
-  console.log("after fix", merchants);
+  console.log('after fix', merchants);
   const parsedMerchants = [].concat
     .apply(
       [],
@@ -214,12 +214,12 @@ const init = async () => {
       )
     )
     .filter((item) =>
-      ["United States", "United Kingdom", "India"].includes(
+      ['United States', 'United Kingdom', 'India'].includes(
         item.marketplaceName.trim()
       )
     );
   data.merchants = parsedMerchants;
-  data.status = "running";
+  data.status = 'running';
   await setLocalData(data);
   await sleep(3000);
   switchToMerchant(data.merchants[0]);
@@ -227,25 +227,25 @@ const init = async () => {
 
 const region = {
   US: {
-    domain: "https://sellercentral.amazon.com/",
+    domain: 'https://sellercentral.amazon.com/',
   },
   UK: {
-    domain: "https://sellercentral.amazon.co.uk/",
+    domain: 'https://sellercentral.amazon.co.uk/',
   },
   IN: {
-    domain: "https://sellercentral.amazon.in/",
+    domain: 'https://sellercentral.amazon.in/',
   },
 };
 const getDomain = () => {
-  if (location.href.includes(".amazon.com")) return region.US.domain;
-  else if (location.href.includes(".amazon.co.uk")) return region.UK.domain;
+  if (location.href.includes('.amazon.com')) return region.US.domain;
+  else if (location.href.includes('.amazon.co.uk')) return region.UK.domain;
   else return region.IN.domain;
 };
 const getDomainByRegion = (regionName) => {
   switch (regionName) {
-    case "United States":
+    case 'United States':
       return region.US.domain;
-    case "United Kingdom":
+    case 'United Kingdom':
       return region.UK.domain;
     default:
       return region.IN.domain;
@@ -265,62 +265,64 @@ const getSwitchRegionUrl = (
 
 const getMerchants = () => {
   return new Promise((resolve, reject) => {
-    fetch(getDomain() + "global-picker/data/get-partner-accounts", {
+    fetch(getDomain() + 'global-picker/data/get-partner-accounts', {
       headers: {
-        accept: "*/*",
-        "accept-language": "en-US,en;q=0.9,vi;q=0.8",
-        "cache-control": "no-cache",
-        "content-type": "application/json",
-        pragma: "no-cache",
-        "sec-ch-ua":
+        accept: '*/*',
+        'accept-language': 'en-US,en;q=0.9,vi;q=0.8',
+        'cache-control': 'no-cache',
+        'content-type': 'application/json',
+        pragma: 'no-cache',
+        'sec-ch-ua':
           '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "x-requested-with": "XMLHttpRequest",
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'x-requested-with': 'XMLHttpRequest',
       },
-      referrerPolicy: "strict-origin-when-cross-origin",
+      referrerPolicy: 'strict-origin-when-cross-origin',
       body: '{"delegationContext":"","pageSize":10}',
-      method: "POST",
-      mode: "cors",
-      credentials: "include",
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
     })
       .then((data) => data.json())
-      .then((data) => resolve(data));
+      .then((data) => resolve(data))
+      .catch(reject);
   });
 };
 const getMerchantMarketPlaces = (merchantId) => {
   return new Promise((resolve, reject) => {
     fetch(
       getDomain() +
-        "global-picker/data/get-merchant-marketplaces-for-partner-account",
+        'global-picker/data/get-merchant-marketplaces-for-partner-account',
       {
         headers: {
-          accept: "*/*",
-          "accept-language": "en-US,en;q=0.9,vi;q=0.8",
-          "cache-control": "no-cache",
-          "content-type": "application/json",
-          pragma: "no-cache",
-          "sec-ch-ua":
+          accept: '*/*',
+          'accept-language': 'en-US,en;q=0.9,vi;q=0.8',
+          'cache-control': 'no-cache',
+          'content-type': 'application/json',
+          pragma: 'no-cache',
+          'sec-ch-ua':
             '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": '"Windows"',
-          "sec-fetch-dest": "empty",
-          "sec-fetch-mode": "cors",
-          "sec-fetch-site": "same-origin",
-          "x-requested-with": "XMLHttpRequest",
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"Windows"',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-origin',
+          'x-requested-with': 'XMLHttpRequest',
         },
-        referrerPolicy: "strict-origin-when-cross-origin",
+        referrerPolicy: 'strict-origin-when-cross-origin',
         body: `{"delegationContext":"","partnerAccountId":"${merchantId}"}`,
-        method: "POST",
-        mode: "cors",
-        credentials: "include",
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
       }
     )
       .then((data) => data.json())
-      .then((data) => resolve(data.merchantMarketplaces));
+      .then((data) => resolve(data.merchantMarketplaces))
+      .catch(reject);
   });
 };
 //Mass order getters
@@ -360,82 +362,85 @@ const getOrders = (offset) => {
         `/orders-api/search?limit=15&offset=${offset}&sort=ship_by_asc&date-range=last-7&fulfillmentType=mfn&orderStatus=unshipped&forceOrdersTableRefreshTrigger=false`,
       {
         headers: {
-          accept: "application/json",
-          "accept-language": "en-US,en;q=0.9,vi;q=0.8",
-          "anti-csrftoken-a2z-request": "true",
-          "content-type": "application/json",
-          "sec-ch-ua":
+          accept: 'application/json',
+          'accept-language': 'en-US,en;q=0.9,vi;q=0.8',
+          'anti-csrftoken-a2z-request': 'true',
+          'content-type': 'application/json',
+          'sec-ch-ua':
             '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": '"Windows"',
-          "sec-fetch-dest": "empty",
-          "sec-fetch-mode": "cors",
-          "sec-fetch-site": "same-origin",
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"Windows"',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-origin',
         },
         referrer:
-          "https://sellercentral.amazon.in/orders-v3/ref=xx_myo_dnav_xx?page=1",
-        referrerPolicy: "strict-origin-when-cross-origin",
+          'https://sellercentral.amazon.in/orders-v3/ref=xx_myo_dnav_xx?page=1',
+        referrerPolicy: 'strict-origin-when-cross-origin',
         body: null,
-        method: "GET",
-        mode: "cors",
-        credentials: "include",
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
       }
     )
       .then((data) => data.json())
-      .then((data) => resolve(data));
+      .then((data) => resolve(data))
+      .catch(reject);
   });
 };
 const getAddressDetail = (blob) => {
   return new Promise((resolve, reject) => {
-    fetch(getDomain() + "orders-st/resolve", {
+    fetch(getDomain() + 'orders-st/resolve', {
       headers: {
-        accept: "application/json",
-        "accept-language": "en-US,en;q=0.9,vi;q=0.8",
-        "content-type": "application/json",
-        "sec-ch-ua":
+        accept: 'application/json',
+        'accept-language': 'en-US,en;q=0.9,vi;q=0.8',
+        'content-type': 'application/json',
+        'sec-ch-ua':
           '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
       },
       referrer:
-        "https://sellercentral.amazon.in/orders-v3/order/405-1856318-3832328",
-      referrerPolicy: "strict-origin-when-cross-origin",
+        'https://sellercentral.amazon.in/orders-v3/order/405-1856318-3832328',
+      referrerPolicy: 'strict-origin-when-cross-origin',
       body: `{\"blobs\":[\"${blob}\"]}`,
-      method: "POST",
-      mode: "cors",
-      credentials: "include",
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
     })
       .then((data) => data.json())
-      .then((data) => resolve(data));
+      .then((data) => resolve(data))
+      .catch(reject);
   });
 };
 const getOrderDetail = (id) => {
   return new Promise((resolve, reject) => {
     fetch(getDomain() + `/orders-api/order/${id}`, {
       headers: {
-        accept: "application/json",
-        "accept-language": "en-US,en;q=0.9,vi;q=0.8",
-        "anti-csrftoken-a2z-request": "true",
-        "content-type": "application/json",
-        "sec-ch-ua":
+        accept: 'application/json',
+        'accept-language': 'en-US,en;q=0.9,vi;q=0.8',
+        'anti-csrftoken-a2z-request': 'true',
+        'content-type': 'application/json',
+        'sec-ch-ua':
           '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
       },
-      referrerPolicy: "strict-origin-when-cross-origin",
+      referrerPolicy: 'strict-origin-when-cross-origin',
       body: null,
-      method: "GET",
-      mode: "cors",
-      credentials: "include",
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
     })
       .then((data) => data.json())
-      .then((data) => resolve(data));
+      .then((data) => resolve(data))
+      .catch(reject);
   });
 };
 
@@ -447,5 +452,5 @@ const sleep = (ms) => {
 
 /*MAIN*/
 
-document.getElementById("actionButton").onclick = onClickScrape;
+document.getElementById('actionButton').onclick = onClickScrape;
 localStorageHandler();
