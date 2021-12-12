@@ -78,7 +78,7 @@ const objectToCsvLine = (object) => {
     object.marketName,
     object.amazonOrderId,
     wrap(new Date(object.orderDate * 1000).toISOString()),
-    wrap(new Date(object.earliestDeliveryDate * 1000).toISOString()),
+    wrap(new Date(object.latestDeliveryDate * 1000).toISOString()),
     object.salesChannel,
     wrap(object.sellerSku),
     wrap(object.productName),
@@ -136,7 +136,7 @@ const exportToCsv = (orders) => {
 };
 //SE@656%&#
 const running = async () => {
-  /*accountName, marketName, amazonOrderId, orderDate, earliestDeliveryDate, 
+  /*accountName, marketName, amazonOrderId, orderDate, latestDeliveryDate, 
   salesChannel, orderItems.sellerSku,orderItems.productName, orderItems.quantityOrdered, 
   orderItems.unitPrice.CurrencyCode, orderItems.unitPrice.Amount, address.name, address.line1, address.line2, 
   address.city, address.stateOrRegion, address.postalCode, address.countryCode, address.phoneNumber, 
